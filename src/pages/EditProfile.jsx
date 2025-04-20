@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateStart, updateSuccess, updateFailure } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { updateUser } from "../api";
 import "../styles/EditProfile.css";
 
 const EditProfile = () => {
@@ -35,7 +35,7 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(updateStart());
-
+  
     try {
       const updatedData = {
         first_name: formData.firstName,
@@ -45,28 +45,19 @@ const EditProfile = () => {
         ...(formData.password && { password: formData.password }),
       };
 
-      const response = await axios.patch(
-        `${process.env.REACT_APP_API_URL}/users/${currentUser.id}`,
-        updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken") || currentUser.token}`,
-          },
-        }
-      );
-
-      const updatedUser  = response.data;
-      dispatch(updateSuccess(updatedUser ));
-      localStorage.setItem("userProfile", JSON.stringify(updatedUser )); // Save updated user to localStorage
-
+      const updatedUser = await updateUser(currentUser.id, updatedData);
+  
+      dispatch(updateSuccess(updatedUser));
+      localStorage.setItem("userProfile", JSON.stringify(updatedUser));
+  
       alert("Profile updated successfully!");
       navigate("/profile");
     } catch (error) {
       console.error("Error updating profile:", error);
-      dispatch(updateFailure(error.response?.data?.message || "Failed to update profile"));
+      dispatch(updateFailure(error.message || "Failed to update profile"));
       alert("Failed to update profile. Please try again later.");
     }
-  };
+  };  
 
   return (
     <div className="edit-profile-container">

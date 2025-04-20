@@ -5,10 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
-import axios from "axios";
+import { signInUser } from "../api";
 import "../styles/SignIn.css";
 
-export default function SignIn() {
+const SignIn = () => {
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,15 +33,19 @@ export default function SignIn() {
     setLoading(true);
     setErrorMessage("");
   
-    // Determine whether the identifier is an email or school ID
-    const isEmail = formData.identifier.includes("@");
-    const loginData = isEmail
-      ? { email: formData.identifier, password: formData.password }
-      : { school_id: formData.identifier, password: formData.password };
-  
-    try {
-      const response = await axios.post(`${API_URL}/auth/login`, loginData);
-      const { access_token, user } = response.data;
+    const identifier = formData.identifier.trim();
+    const isEmail = identifier.includes("@");
+    const isSchoolId = /^\d/.test(identifier); // starts with a number = school_id
+
+    const loginPayload = isEmail
+      ? { email: identifier, password: formData.password }
+      : isSchoolId
+      ? { school_id: identifier, password: formData.password }
+      : { username: identifier, password: formData.password };
+
+  try {
+    const response = await signInUser(loginPayload);
+      const { access_token, user } = response;
   
       localStorage.setItem("authToken", access_token);
       localStorage.setItem("role", user.role);
@@ -49,7 +53,7 @@ export default function SignIn() {
   
       dispatch(signInSuccess(user));
   
-      alert(`Welcome back, ${user.username}!`);
+      alert(`Welcome back, ${user.name || "User"}!`);
   
       if (user.role === "student") {
         navigate("/main-page");
@@ -61,7 +65,7 @@ export default function SignIn() {
         navigate("/main-page");
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Invalid Email/School ID or password.");
+      setErrorMessage(error.response?.data?.message || "Invalid credentials.");
     } finally {
       setLoading(false);
     }
@@ -131,3 +135,5 @@ export default function SignIn() {
     </div>
   );
 }
+export default SignIn;
+

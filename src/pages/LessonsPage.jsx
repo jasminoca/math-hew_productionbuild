@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/LessonsPage.css";
 import { FaArrowLeft, FaPlus, FaCheck, FaTimes, FaEdit, FaTrash } from 'react-icons/fa';
 
-const API_URL = process.env.REACT_APP_API_URL ?? "https://mathhew-backend-deploy.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL ?? "http://localhost:3000";
 
 const LessonsPage = ({ userRole }) => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const LessonsPage = ({ userRole }) => {
           },
         });
         const data = await response.json();
-        setLessons(Array.isArray(data) ? data : []);
+        setLessons(data);
       } catch (error) {
         console.error("Error fetching lessons:", error);
       }
@@ -67,37 +67,49 @@ const LessonsPage = ({ userRole }) => {
   const handleViewLesson = async (lesson) => {
     try {
       const school_id = JSON.parse(localStorage.getItem("userProfile"))?.school_id;
-      
+  
       const lessonRes = await fetch(`${API_URL}/lessons/${lesson.id}`);
       const fullLesson = await lessonRes.json();
       setSelectedLesson(fullLesson);
-
+  
       const scoreRes = await fetch(`${API_URL}/scores/${lesson.id}/${school_id}`);
       const scoreData = await scoreRes.json();
-      setStudentAnswers(scoreData?.answers || {});
-      setAttemptCount(scoreData?.attempts || 0);
-
-      const completed = scoreData?.attempts >= 3 || scoreData?.score === fullLesson.questions.length;
-      setLessonCompleted(completed);
-
-      if (scoreData?.answers) {
-        const feedback = {};
-        fullLesson.questions.forEach((q) => {
-          const selected = scoreData.answers[q.id];
-          if (selected?.trim().toLowerCase() === q.correctAnswer?.trim().toLowerCase()) {
-            feedback[q.id] = "✅ Correct!";
-          } else {
-            feedback[q.id] = "❌ Incorrect";
-          }
-        });
-        setAnswerFeedback(feedback);
-      } else {
-        setAnswerFeedback({});
+  
+      const studentAns = scoreData?.answers || {};
+      const attempts = scoreData?.attempts || 0;
+      const totalQuestions = fullLesson.questions?.length || 0;
+  
+      setStudentAnswers(studentAns);
+      setAttemptCount(attempts);
+  
+      let completed = false;
+      const feedback = {};
+  
+      // Determine if all answers are correct
+      let correctCount = 0;
+      fullLesson.questions.forEach((q) => {
+        const selected = studentAns[q.id];
+        if (selected?.trim().toLowerCase() === q.correctAnswer?.trim().toLowerCase()) {
+          feedback[q.id] = "✅ Correct!";
+          correctCount++;
+        } else if (selected) {
+          feedback[q.id] = "❌ Incorrect";
+        }
+      });
+  
+      if (attempts >= 3 || correctCount === totalQuestions) {
+        completed = true;
       }
+  
+      setLessonCompleted(completed);
+      setAnswerFeedback(feedback);
+      setStudentAnswers(studentAns); 
+
     } catch (err) {
       console.error("Error viewing lesson:", err);
     }
   };
+  
 
   const handleAddKeypoint = async () => {
     if (!newKeypoint.trim()) return;
@@ -121,7 +133,7 @@ const LessonsPage = ({ userRole }) => {
   const handleEditKeypoint = async (id, updatedContent) => {
     try {
       await fetch(`${API_URL}/lessons/${selectedLesson.id}/keypoints/${id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: updatedContent }),
       });
@@ -155,24 +167,27 @@ const LessonsPage = ({ userRole }) => {
         choices: editedQuestion.choices,
         correctAnswer: editedQuestion.correctAnswer,
       };
-      
+  
       const response = await fetch(`${API_URL}/lessons/${selectedLesson.id}/questions/${id}`, {
-        method: "PUT",
+        method: "PATCH", // ⬅️ this must match your controller
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
+  
       if (!response.ok) throw new Error("Failed to update question");
+  
       const updatedQuestion = await response.json();
       setSelectedLesson((prev) => ({
         ...prev,
         questions: prev.questions.map((q) => (q.id === id ? updatedQuestion : q)),
       }));
+  
       setEditingQuestionId(null);
     } catch (error) {
       console.error("Edit failed:", error);
     }
   };
+  
   
   const handleAddQuestion = async () => {
     const { question, choices, correctAnswer } = newQuestion;
@@ -221,43 +236,51 @@ const LessonsPage = ({ userRole }) => {
       const answers = studentAnswers;
       const feedback = {};
       let score = 0;
-
+  
       selectedLesson.questions.forEach((q) => {
         const selected = answers[q.id];
         if (selected && selected.trim().toLowerCase() === q.correctAnswer?.trim().toLowerCase()) {
-          feedback[q.id] = "✅ Correct!";
+          feedback[q.id] = "Correct!";
           score += 1;
         } else {
-          feedback[q.id] = "❌ Incorrect";
+          feedback[q.id] = "Incorrect";
         }
       });
-
+  
       setAnswerFeedback(feedback);
-      setAttemptCount((prev) => prev + 1);
-
-      if (score === selectedLesson.questions.length || attemptCount + 1 >= 3) {
+      const newAttemptCount = attemptCount + 1;
+      setAttemptCount(newAttemptCount);
+  
+      const isCompleted = score === selectedLesson.questions.length || newAttemptCount >= 3;
+      if (isCompleted) {
         setLessonCompleted(true);
-        await fetch(`${API_URL}/lessons/${selectedLesson.id}/submit`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({
-            answers: studentAnswers,
-            school_id,
-          }),
-        });
-        alert(`Lesson completed! You scored ${score}/${selectedLesson.questions.length}${
-          attemptCount + 1 >= 3 && score < selectedLesson.questions.length ? " (3 attempts used)" : ""
-        }`);
+      }
+  
+      // Always submit to backend if new score or completion status
+      await fetch(`${API_URL}/lessons/${selectedLesson.id}/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({
+          answers: studentAnswers,
+          school_id,
+        }),
+      });
+  
+      if (score === selectedLesson.questions.length) {
+        alert(`🎉 Great job! You answered all correctly on attempt ${newAttemptCount}.`);
+      } else if (newAttemptCount >= 3) {
+        alert(`You have used all 3 attempts. Final score: ${score}/${selectedLesson.questions.length}`);
       } else {
-        alert(`Attempt ${attemptCount + 1}: You got ${score} correct. Try again.`);
+        alert(`Attempt ${newAttemptCount}: You got ${score} correct. Try again.`);
       }
     } catch (error) {
       console.error("Failed to submit answers:", error);
     }
   };
+  
 
   const renderLessonList = () => (
     <div className="lesson-list-container">

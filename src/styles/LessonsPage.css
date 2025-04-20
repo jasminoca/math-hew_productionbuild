@@ -353,6 +353,7 @@ body {
 .question-text {
   font-size: 1rem;
   line-height: 1.5;
+  color:#000000;
 }
 
 .choices-list {
@@ -368,12 +369,19 @@ body {
 .choice-item label {
   display: flex;
   align-items: center;
+  gap: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  text-align: left;
 }
 
 .choice-radio {
-  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  accent-color: var(--primary-color); /* Optional: styled radio color */
 }
+
 
 .choice-text {
   color: #444;
@@ -392,6 +400,7 @@ body {
 .choice-input,
 .correct-answer-input,
 .form-input {
+  color: #000000;
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #ddd;
