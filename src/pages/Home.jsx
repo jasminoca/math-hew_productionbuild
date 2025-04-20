@@ -37,7 +37,7 @@ const Home = () => {
 
   const handleStartLearningClick = () => {
     if (currentUser) {
-      navigate("/main-page");
+      navigate("/lessons-page");
     } else {
       navigate("/sign-in");
     }
@@ -65,7 +65,7 @@ const Home = () => {
             />
           </div>
           <div className="home-text">
-            <h1 className="home-title">Welcome to Math-hew!</h1>
+          <h1 className="home-title">Welcome to<br/>Math-hew!</h1>
             <p className="home-description">
               Ready to explore the amazing world of 4th Grade Mathematics?
             </p>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/AdminTeacherLeaderboard.css"; 
 
-export default function AdminLeaderboard() {
+const AdminLeaderboard = () => {
   const [memoryGameData] = useState([
     { rank: 1, name: "Alice Johnson", score: 98 },
     { rank: 2, name: "Bob Smith", score: 92 },
@@ -16,17 +16,18 @@ export default function AdminLeaderboard() {
   // Fetch Math Speedy Quiz scores from backend
   const fetchMathSpeedyScores = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/scores/math-speedy-scores`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/scores?type=game`);
       const scores = response.data;
-  
-      const rankedScores = scores.map((entry, index) => ({
-        rank: index + 1,
-        name: `${entry.first_name} ${entry.last_name}`, // Use first_name and last_name
-        schoolId: entry.school_id,
-        score: entry.score,
-      }));
-      
-  
+
+      const rankedScores = scores
+        .sort((a, b) => b.score - a.score)
+        .map((entry, index) => ({
+          rank: index + 1,
+          name: `${entry.first_name || "No"} ${entry.last_name || "Name"}`,
+          schoolId: entry.school_id || "N/A",
+          score: entry.score,
+        }));
+
       setSpeedyQuizData(rankedScores);
     } catch (error) {
       console.error("Error fetching Math Speedy Quiz scores:", error);
@@ -107,3 +108,6 @@ export default function AdminLeaderboard() {
     </div>
   );
 }
+
+export default AdminLeaderboard;
+

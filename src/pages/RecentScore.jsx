@@ -3,7 +3,7 @@ import axios from "axios";
 import "../styles/RecentScore.css";
 import { getUserRole } from "../utils/auth";
 
-export default function RecentScores() {
+const RecentScores = () => {
   const [lessonScores, setLessonScores] = useState([]);
   const [gameScores, setGameScores] = useState([]);
   const userRole = getUserRole();
@@ -13,16 +13,16 @@ export default function RecentScores() {
     const fetchScores = async () => {
       try {
         if (userRole === "student") {
-          const res = await axios.get(`${process.env.REACT_APP_API_URL}/scores/by-student/${schoolId}`);
-          setLessonScores(res.data || []);
-          // TODO: add endpoint for game scores
-          setGameScores([]); // placeholder
-        } else {
-          const resLesson = await axios.get(`${process.env.REACT_APP_API_URL}/scores/all-lessons`);
-const resGames = await axios.get(`${process.env.REACT_APP_API_URL}/scores/all-games`);
+          const resLesson = await axios.get(`${process.env.REACT_APP_API_URL}/scores/lesson?school_id=${schoolId}`);
+          const resGames = await axios.get(`${process.env.REACT_APP_API_URL}/scores/game?school_id=${schoolId}`);
           setLessonScores(resLesson.data || []);
           setGameScores(resGames.data || []);
-        }
+        } else {
+          const resLesson = await axios.get(`${process.env.REACT_APP_API_URL}/scores?type=lesson`);
+          const resGames = await axios.get(`${process.env.REACT_APP_API_URL}/scores?type=game`);
+          setLessonScores(resLesson.data || []);
+          setGameScores(resGames.data || []);
+        }        
       } catch (err) {
         console.error("Failed to fetch scores:", err);
       }
@@ -73,3 +73,6 @@ const resGames = await axios.get(`${process.env.REACT_APP_API_URL}/scores/all-ga
     </div>
   );
 }
+
+export default RecentScores;
+

@@ -78,7 +78,15 @@ const Header = () => {
         {/* Navigation */}
         <nav className={`header-nav ${menuOpen ? "header-nav-open" : ""}`}>
           {/* Home: dropdown for student/teacher, plain links for guest */}
-          {(currentUser?.role === "student" || currentUser?.role === "teacher") ? (
+          {!currentUser && (
+            <>
+              <span className="header-nav-link" onClick={handleScrollToTop}>Home</span>
+              <span className="header-nav-link" onClick={() => handleScrollTo("about-us")}>About Us</span>
+              <span className="header-nav-link" onClick={() => handleScrollTo("contact-us")}>Contact Us</span>
+            </>
+          )}
+
+          {currentUser?.role === "student" && (
             <div
               className={`header-nav-link dropdown-parent ${dropdownOpen === "home" ? "open" : ""}`}
               onMouseEnter={() => !isMobile && setDropdownOpen("home")}
@@ -92,17 +100,14 @@ const Header = () => {
                 <span className="dropdown-item" onClick={() => handleScrollTo("contact-us")}>Contact Us</span>
               </div>
             </div>
-          ) : (
-            <>
-              <span className="header-nav-link" onClick={handleScrollToTop}>Home</span>
-              <span className="header-nav-link" onClick={() => handleScrollTo("about-us")}>About Us</span>
-              <span className="header-nav-link" onClick={() => handleScrollTo("contact-us")}>Contact Us</span>
-            </>
           )}
 
           {/* Teacher only */}
           {currentUser?.role === "teacher" && (
-            <Link to="/main-page" className="header-nav-link">Dashboard</Link>
+            <>
+              <Link to="/TeacherAdminPage" className="header-nav-link">Dashboard</Link>
+              <Link to="/lessons-page" className="header-nav-link">Lessons</Link>
+            </>
           )}
 
           {/* Recent Scores dropdown */}

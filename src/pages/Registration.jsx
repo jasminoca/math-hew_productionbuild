@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { registerUser } from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "../styles/Registration.css";
 
-export default function Register() {
+const Registration = () => {
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,53 +19,39 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@cit\.edu$/; // Must be an institutional email
-    const passwordRegex = /^(?=.*[0-9]).{8,}$/; // At least 8 characters and 1 number
-
+  
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@cit\.edu$/;
+    const passwordRegex = /^(?=.*[0-9]).{8,}$/;
+  
     if (!formData.email || !formData.password || !formData.schoolId || !formData.username || !formData.role) {
       setErrorMessage("Please fill all the fields.");
       return;
     }
-
+  
     if (!emailRegex.test(formData.email)) {
       setErrorMessage("Email must be in the format: example@cit.edu");
       return;
     }
-
+  
     if (!passwordRegex.test(formData.password)) {
       setErrorMessage("Password must be at least 8 characters long and contain at least one number.");
       return;
     }
-
+  
     setLoading(true);
     setErrorMessage("");
-
+  
     try {
-      // Check if the username, email, or school ID already exists
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/users/check-existence`, {
-        params: { username: formData.username, email: formData.email, school_id: formData.schoolId },
-      });
-
-      if (data.exists) {
-        setErrorMessage("Username, Email, or School ID is already registered.");
-        setLoading(false);
-        return;
-      }
-
-      // Proceed with registration
       const userData = {
+        full_name: `${formData.firstName} ${formData.lastName}`,
         username: formData.username,
         password: formData.password,
         email: formData.email,
         role: formData.role,
-        user_type: formData.role,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
         school_id: formData.schoolId,
       };
-
-      await axios.post(`${process.env.REACT_APP_API_URL}/users/register`, userData);
+  
+      await registerUser(userData);
       alert("Registration successful!");
       navigate("/sign-in");
     } catch (error) {
@@ -145,3 +131,6 @@ export default function Register() {
     </div>
   );
 }
+
+export default Registration;
+

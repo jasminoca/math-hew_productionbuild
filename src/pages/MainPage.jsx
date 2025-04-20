@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import "../styles/MainPage.css";
 
 const MainPage = () => {
-  // Retrieve the current user's information from Redux
   const currentUser = useSelector((state) => state.user.currentUser);
 
   return (
@@ -28,21 +27,6 @@ const MainPage = () => {
         </p>
       </div>
 
-      {/* Top Activities */}
-      <div className="top-activities-container">
-        <Link to="/math-memory-game" className="activity-card highlight-card">
-          <h2 className="activity-title">Math Memory Game</h2>
-          <p className="activity-description">Test your memory with fun challenges!</p>
-        </Link>
-
-        <Link to="/math-speedy-quiz" className="activity-card highlight-card">
-          <h2 className="activity-title">Math Speedy Quiz</h2>
-          <p className="activity-description">
-            Solve quick math problems and beat the clock!
-          </p>
-        </Link>
-      </div>
-
       {/* Bottom Activities */}
       <div className="bottom-activities-container">
         <Link to="/lessons-page" className="activity-card">
@@ -59,10 +43,10 @@ const MainPage = () => {
           </p>
         </Link>
 
-        <Link to="/progress-tracking" className="activity-card">
-          <h2 className="activity-title">Progress Tracking</h2>
+        <Link to="/game" className="activity-card">
+          <h2 className="activity-title">Play Game</h2>
           <p className="activity-description">
-            Track your learning journey and celebrate your achievements!
+            Jump into a fun math adventure and level up your skills!
           </p>
         </Link>
       </div>

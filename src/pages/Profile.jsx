@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { getUser } from "../api";
 import "../styles/Profile.css";
 
 const Profile = () => {
@@ -13,26 +13,20 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${currentUser?.id}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-
-        if (response.data) {
-          dispatch(signInSuccess(response.data)); // Update Redux state
-          setUser(response.data); // Update component state
-          localStorage.setItem("userProfile", JSON.stringify(response.data)); // Persist latest data
-        }
+        const user = await getUser(currentUser?.id);
+        dispatch(signInSuccess(user));
+        setUser(user);
+        localStorage.setItem("userProfile", JSON.stringify(user));
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
     };
-
-    fetchUser(); // Fetch fresh user data when the component loads
+  
+    if (currentUser?.id) {
+      fetchUser();
+    }
   }, [dispatch, currentUser?.id]);
-
+  
   if (!user) {
     return <p>Please log in to view your profile.</p>;
   }

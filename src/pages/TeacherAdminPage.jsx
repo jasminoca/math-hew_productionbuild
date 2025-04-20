@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/TeacherAdminPage.css";
+import "../styles/TeacherDashboard.css";
 
 const TeacherAdminPage = () => {
   const [students, setStudents] = useState([]);
@@ -11,7 +11,7 @@ const TeacherAdminPage = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/filter?role=student`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users?role=student`);
       if (!response.ok) {
         throw new Error("Failed to fetch students");
       }

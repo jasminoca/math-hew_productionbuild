@@ -1,49 +1,83 @@
 import axios from 'axios';
-import { signInSuccess } from '../redux/user/userSlice';
-import store from '../redux/store'; // Import Redux store
+import { signInSuccess } from './redux/user/userSlice';
+import store from './redux/store';
 
-// Set the base URL dynamically using environment variables
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
+// Auth
+export const signInUser = async (payload) => {
+  const response = await axios.post(`${API_URL}/auth/login`, payload);
+  store.dispatch(signInSuccess(response.data.user));
+  return response.data;
+};
+
+// export const signInUser  = async (identifier, password) => {
+//   const response = await axios.post(`${API_URL}/auth/login`, {
+//     email: identifier.includes('@') ? identifier : undefined,
+//     school_id: identifier.includes('@') ? identifier : undefined,
+//     password,
+//   });
+
+//   store.dispatch(signInSuccess(response.data.user));
+//   return response.data;
+// };
+
+// User
 export const registerUser = async (userData) => {
-  try {
-    const response = await axios.post(`${API_URL}/users/register`, userData);
-    console.log('User registered:', response.data);
-
-    // Dispatch signInSuccess to update Redux state
-    store.dispatch(signInSuccess(response.data));
-
-    // Save user to localStorage
-    localStorage.setItem('userProfile', JSON.stringify(response.data));
-
-    return response.data;
-  } catch (error) {
-    console.error('Error registering user:', error.response?.data || error.message);
-    throw error;
-  }
+  const response = await axios.post(`${API_URL}/users`, userData); // 🔁 No /register route in Firebase backend
+  return response.data;
 };
 
-export const signInUser = async (credentials) => {
-  try {
-    const response = await axios.post(`${API_URL}/users/signin`, credentials);
-    console.log('User signed in:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error signing in user:', error.response?.data || error.message);
-    throw error;
-  }
+export const updateUser = async (id, updateData) => {
+  const response = await axios.patch(`${API_URL}/users/${id}`, updateData);
+  return response.data;
 };
 
-// Example usage (optional, remove in production)
-const userData = {
-  username: 'testuser',
-  password: 'testpassword',
-  email: 'testuser@example.com',
-  first_name: 'Test',
-  last_name: 'User',
-  user_type: 'student',
-  role: 'student',
+// Lesson
+export const getAllLessons = async () => {
+  const response = await axios.get(`${API_URL}/lessons`);
+  return response.data;
 };
 
-// Uncomment the following line to test (use cautiously in production)
-registerUser(userData);
+export const getLessonById = async (id) => {
+  const response = await axios.get(`${API_URL}/lessons/${id}`);
+  return response.data;
+};
+
+export const createLesson = async (data) => {
+  const response = await axios.post(`${API_URL}/lessons`, data);
+  return response.data;
+};
+
+export const updateLesson = async (id, data) => {
+  const response = await axios.patch(`${API_URL}/lessons/${id}`, data);
+  return response.data;
+};
+
+//Score
+export const submitScore = async (data) => {
+  const response = await axios.post(`${API_URL}/scores`, data);
+  return response.data;
+};
+
+export const getScoresByUser = async (userId) => {
+  const response = await axios.get(`${API_URL}/scores/user/${userId}`);
+  return response.data;
+};
+
+// Video
+export const getAllVideos = async () => {
+  const response = await axios.get(`${API_URL}/videos`);
+  return response.data;
+};
+
+export const createVideo = async (data) => {
+  const response = await axios.post(`${API_URL}/videos`, data);
+  return response.data;
+};
+
+export const getUser = async (id) => {
+  const response = await axios.get(`${API_URL}/users/${id}`);
+  return response.data;
+};
+

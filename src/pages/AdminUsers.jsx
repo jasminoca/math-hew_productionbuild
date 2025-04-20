@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/AdminUsers.css";
@@ -16,9 +17,17 @@ const AdminUsers = () => {
   // Function to fetch users from backend
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
-      setUsers(response.data);
-      setFilteredUsers(response.data); // Initialize filtered users
+      const response = await axios.get(`${API_URL}/users`);
+      const allUsers = response.data.map((user) => ({
+        id: user.id,
+        name: user.full_name || user.username || "No Name",
+        email: user.email || "No Email",
+        role: user.role || "unknown",
+        schoolId: user.school_id || "N/A",
+      }));
+  
+      setUsers(allUsers);
+      setFilteredUsers(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }

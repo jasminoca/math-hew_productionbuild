@@ -31,21 +31,15 @@ export default function FooterComponent() {
           <div className="footer-links">
             <button
               className="footer-link"
-              onClick={() => handleProtectedLinkClick("/math-memory-game")}
-            >
-              Math Games
-            </button>
-            <button
-              className="footer-link"
               onClick={() => handleProtectedLinkClick("/leaderboard")}
             >
               Leaderboard
             </button>
             <button
               className="footer-link"
-              onClick={() => handleProtectedLinkClick("/math-speedy-quiz")}
+              onClick={() => handleProtectedLinkClick("/game")}
             >
-              Quizzes
+              Game
             </button>
           </div>
         </div>
@@ -55,7 +49,7 @@ export default function FooterComponent() {
           <p className="footer-cta">
             <span
               className="footer-link"
-              onClick={() => handleProtectedLinkClick("/games")}
+              onClick={() => handleProtectedLinkClick("/game")}
             >
               Ready to explore more? Play Now!
             </span>

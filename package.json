@@ -16,6 +16,7 @@
     "chart.js": "^4.4.6",
     "class-validator": "^0.14.1",
     "duck_hunt": "file:",
+    "firebase": "^11.6.0",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.2",
     "javascript-state-machine": "^3.1.0",
@@ -62,8 +63,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "autoprefixer": "^10.4.20",
-    "tailwindcss": "^3.4.15",
     "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
     "vite": "^6.0.5"
   }
 }
