@@ -1,17 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
-import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder
-import { COLORS } from "../constants"; // Import colors from constants file
-import Dog from "../entities/dog"; // Import Dog entity
-import Duck from "../entities/duck"; // Import Duck entity
-import k from "../kaplayCtx"; // Your Kaplay context, assuming this initializes Kaplay
-import gameManager from "../gameManager"; // Import your gameManager
-import formatScore from "../utils"; // Utility function for formatting score
+import React, { useEffect, useRef } from "react";
+import { loadAssets } from "../assetLoader";
+import { COLORS } from "../constants";
+import Dog from "../entities/dog";
+import Duck from "../entities/duck";
+import k from "../kaplayCtx";
+import gameManager from "../gameManager";
+import formatScore from "../utils";
+import "../styles/GamePage.css";
 
 const GamePage = () => {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const audioCtxRef = useRef(null);
+  const gameContainerRef = useRef(null);
+  const isInitialized = useRef(false);
+
   useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
+    // Initialize audio context
+    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+
     // Load assets when the component mounts
     loadAssets();
     const MAX_ROUNDS = 5;
@@ -101,30 +111,29 @@ const GamePage = () => {
         k.anchor("center"),
         k.pos(k.center().x, k.center().y - 50),
         k.z(2),
-    ]);
+      ]);
       gameInstructions.add([
         k.text("SHOOT THE RULERS TO REACH THE GOAL!", { font: "nes", size: 5 }),
         k.anchor("center"),
         k.pos(0, -10),
-    ]);
+      ]);
       gameInstructions.add([
         k.text("AVOID GOING NEGATIVE OR OVERSHOOTING!", { font: "nes", size: 5 }),
         k.anchor("center"),
         k.pos(0, 0),
-    ]);
+      ]);
       gameInstructions.add([
         k.text("EARN BONUS POINTS FOR FEWER MOVES!", { font: "nes", size: 5 }),
         k.anchor("center"),
         k.pos(0, 10),
-    ]);
- 
-    let dog;
+      ]);
+
+      let dog;
       k.wait(7, () => {
         k.destroy(gameInstructions);
         dog = new Dog(k.vec2(0, k.center().y));
         dog.searchForDucks();
-      })
-
+      });
 
       const roundStartController = gameManager.stateMachine.onStateEnter(
         "round-start",
@@ -168,31 +177,28 @@ const GamePage = () => {
       const roundEndController = gameManager.stateMachine.onStateEnter(
         "round-end",
         () => {
-            // Check for game over conditions
-            if (gameManager.currentMeasure < 0 ||
-                gameManager.currentMeasure > 2 * gameManager.goalMeasure) {
-                k.go("game-over");
-                return;
-            }
-
-            if (gameManager.currentRoundNb === MAX_ROUNDS) {
+          if (gameManager.currentMeasure < 0 ||
+              gameManager.currentMeasure > 2 * gameManager.goalMeasure) {
               k.go("game-over");
               return;
-            }
-     
-            // If the round is valid, check for score updates
-            if (gameManager.currentHuntNb < 15) {
-                gameManager.currentScore += 500; // Plus points if the goal was reached in less than 15 tries
-            }
-     
-            // Reset for the next round
-            gameManager.currentHuntNb = 0;
-            for (const duckIcon of duckIcons.children) {
-                duckIcon.color = k.color(255, 255, 255); // Reset duck icons
-            }
-            gameManager.stateMachine.enterState("round-start"); // Start the next round
+          }
+
+          if (gameManager.currentRoundNb === MAX_ROUNDS) {
+            k.go("game-over");
+            return;
+          }
+   
+          if (gameManager.currentHuntNb < 15) {
+              gameManager.currentScore += 500;
+          }
+   
+          gameManager.currentHuntNb = 0;
+          for (const duckIcon of duckIcons.children) {
+              duckIcon.color = k.color(255, 255, 255);
+          }
+          gameManager.stateMachine.enterState("round-start");
         }
-    );
+      );
 
       const huntStartController = gameManager.stateMachine.onStateEnter(
         "hunt-start",
@@ -211,25 +217,21 @@ const GamePage = () => {
         () => {
             const bestScore = Number(k.getData("best-score"));
      
-            // Update best score if current score is higher
             if (bestScore < gameManager.currentScore) {
                 k.setData("best-score", gameManager.currentScore);
             }
      
-            // Check if the current measure meets the goal measure
             if (gameManager.currentMeasure === gameManager.goalMeasure ||
                 gameManager.currentMeasure < 0 ||
                 gameManager.currentMeasure > 2 * gameManager.goalMeasure) {
                
-                // Reset for the next round
                 gameManager.currentHuntNb = 0;
                 gameManager.stateMachine.enterState("round-end");
             } else {
-                // If the goal is not met, continue to the next hunt
                 gameManager.stateMachine.enterState("hunt-start");
             }
         }
-    );
+      );
 
       const duckHunterController = gameManager.stateMachine.onStateEnter(
         "duck-hunted",
@@ -297,11 +299,11 @@ const GamePage = () => {
           k.getTreeRoot().paused = !k.getTreeRoot().paused;
           if (k.getTreeRoot().paused) {
             gameManager.isGamePaused = true;
-            audioCtx.suspend();
+            audioCtxRef.current.suspend();
             k.add([k.text("PAUSED", { font: "nes", size: 8 }), k.pos(5, 5), k.z(3), "paused-text"]);
           } else {
             gameManager.isGamePaused = false;
-            audioCtx.resume();
+            audioCtxRef.current.resume();
 
             const pausedText = k.get("paused-text")[0];
             if (pausedText) k.destroy(pausedText);
@@ -312,8 +314,6 @@ const GamePage = () => {
 
     // Set up game-over scene
     k.scene("game-over", () => {
-
-      //backend handling here
       const finalScore = gameManager.currentScore;
 
       k.add([k.rect(k.width(), k.height()), k.color(0, 0, 0)]);
@@ -337,12 +337,17 @@ const GamePage = () => {
       if (canvas) {
         canvas.remove();
       }
+      if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
+        audioCtxRef.current.close().catch(e => console.error("AudioContext close error:", e));
+      }
+      gameManager.initializeGameState();
+      Object.keys(k.scenes).forEach(scene => k.destroyScene(scene));
     };
-  }, []); // Runs once when the component mounts
+  }, []);
 
   return (
-    <div className="game-wrapper">
-      <div id="game"></div>
+    <div className="game-page-container">
+      <div ref={gameContainerRef} id="game"></div>
     </div>
   );
 };

@@ -22,7 +22,7 @@
     "javascript-state-machine": "^3.1.0",
     "jwt-decode": "^4.0.0",
     "kaboom": "^3000.1.17",
-    "kaplay": "^3001.0.10",
+    "kaplay": "^3001.0.16",
     "math-hew": "file:",
     "mysql2": "^3.11.5",
     "react": "^18.3.1",
