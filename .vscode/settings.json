@@ -18,6 +18,7 @@
         "mathhewbg",
         "nestjs",
         "snif",
-        "Snifs"
+        "Snifs",
+        "uuidv"
     ]
 }
