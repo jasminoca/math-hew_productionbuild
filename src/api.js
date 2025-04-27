@@ -81,3 +81,33 @@ export const getUser = async (id) => {
   return response.data;
 };
 
+export const addKeypoint = async (lessonId, content) => {
+  const res = await fetch(`${API_URL}/lessons/${lessonId}/keypoints`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  return await res.json();
+};
+
+export const deleteKeypoint = async (lessonId, kpId) => {
+  await fetch(`${API_URL}/lessons/${lessonId}/keypoints/${kpId}`, {
+    method: "DELETE",
+  });
+};
+
+export const addQuestion = async (lessonId, data) => {
+  const res = await fetch(`${API_URL}/lessons/${lessonId}/questions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};
+
+export const deleteQuestion = async (lessonId, qId) => {
+  await fetch(`${API_URL}/lessons/${lessonId}/questions/${qId}`, {
+    method: "DELETE",
+  });
+};
+
