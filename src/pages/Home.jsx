@@ -17,6 +17,19 @@ const Home = () => {
   const [contactRef, contactInView] = useInView({ triggerOnce: true, threshold: 0.3 });
 
   useEffect(() => {
+    // Clean up any game elements when Home mounts
+    const gameElements = [
+      ...document.querySelectorAll('canvas'),
+      ...document.querySelectorAll('.game-page-container'),
+      ...document.querySelectorAll('#game')
+    ];
+    
+    gameElements.forEach(el => {
+      if (el && el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    });
+
     const handleMouseMove = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
@@ -32,6 +45,19 @@ const Home = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
+
+      // Additional cleanup to ensure no game elements remain
+      const remainingGameElements = [
+        ...document.querySelectorAll('canvas'),
+        ...document.querySelectorAll('.game-page-container'),
+        ...document.querySelectorAll('#game')
+      ];
+      
+      remainingGameElements.forEach(el => {
+        if (el && el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      });
     };
   }, []);
 
