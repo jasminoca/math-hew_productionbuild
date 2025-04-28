@@ -2,12 +2,18 @@
     "cSpell.words": [
         "aboutus",
         "anims",
+        "backgrounddecimal",
+        "backgroundfraction",
+        "backgroundmeasure",
         "backgroundpvp",
+        "backgroundwhole",
         "chartjs",
         "chatbuddy",
         "choosemode",
         "craco",
         "cutscene",
+        "firebaseapp",
+        "firebasestorage",
         "firestore",
         "hewbg",
         "kaplay",
@@ -17,8 +23,10 @@
         "longtextbox",
         "mathhewbg",
         "nestjs",
+        "pausebutton",
         "snif",
         "Snifs",
-        "uuidv"
+        "uuidv",
+        "WTRBCX"
     ]
 }

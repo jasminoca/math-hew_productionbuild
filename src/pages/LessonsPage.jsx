@@ -744,11 +744,12 @@ import React, { useState, useEffect } from "react";
                  🎉 You've completed this lesson! Great job!
                </div>
                <button
-                  className="go-to-game-btn"
-                  onClick={() => navigate(`/game?lesson=${selectedLesson.title.toLowerCase()}`)}
+                className="go-to-game-btn"
+                onClick={() => navigate(`/game?lesson=${selectedLesson.id}&difficulty=${selectedLesson.difficulty}`)}
                 >
-                  🎮 Go to {selectedLesson.title} Game
-                </button>
+                🎮 Go to {selectedLesson.title} Game ({selectedLesson.difficulty})
+              </button>
+
               </div>
              )}
            </div>

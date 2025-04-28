@@ -7,6 +7,11 @@ class GameManager {
   p1Measure = 0; // Player 1's measure for PVP mode
   p2Measure = 0; // Player 2's measure for PVP mode
   pvpWinner = 0; // Store the winner in PVP mode
+  lastDuckValue = null; // Track the value of the last duck that appeared
+  
+  // Add lesson type properties
+  lessonType = "measurements"; // Default to measurements
+  difficultyLevel = "beginner"; // Default to beginner
  
   constructor() {
     this.initializeGameState();
@@ -22,6 +27,41 @@ class GameManager {
         "duck-escaped",
       ]),
     ]);
+    
+    // Load lesson settings from localStorage if available
+    this.loadLessonSettings();
+  }
+  
+  loadLessonSettings() {
+    // Try to load the settings from localStorage
+    if (typeof localStorage !== 'undefined') {
+      const savedLessonType = localStorage.getItem('measure-hunt-lesson');
+      const savedDifficultyLevel = localStorage.getItem('measure-hunt-difficulty');
+      
+      if (savedLessonType) {
+        this.lessonType = savedLessonType;
+      }
+      
+      if (savedDifficultyLevel) {
+        this.difficultyLevel = savedDifficultyLevel;
+      }
+    }
+  }
+ 
+  // Helper function to get the background sprite name based on lesson type
+  getBackgroundSprite() {
+    switch (this.lessonType) {
+      case "whole-numbers":
+        return "backgroundwhole";
+      case "fractions":
+        return "backgroundfraction";
+      case "measurements":
+        return "backgroundmeasure";
+      case "decimals":
+        return "backgrounddecimal";
+      default:
+        return "background"; // Default background
+    }
   }
  
   initializeGameState() {
@@ -37,6 +77,7 @@ class GameManager {
     this.p2Measure = 0;
     this.pvpWinner = 0;
     this.pvpRound = 1; // Always round 1 for PVP mode
+    this.lastDuckValue = null; // Reset the last duck value
   }
  
   // Helper function to get current player's measure
