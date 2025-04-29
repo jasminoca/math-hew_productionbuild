@@ -55,12 +55,23 @@ import React, { useState, useEffect } from "react";
       fetchLessons();
     }, [currentRole]);
 
+    useEffect(() => {
+      const storedLessonId = localStorage.getItem("selectedLessonId");
+      if (storedLessonId) {
+        const matchedLesson = lessons.find((l) => l.id === storedLessonId);
+        if (matchedLesson) {
+          handleViewLesson(matchedLesson);
+        }
+      }
+    }, [lessons]);
+    
   const toggleLessonExpand = (lessonId) => {
      setExpandedLesson(expandedLesson === lessonId ? null : lessonId);
    };
  
    const handleViewLesson = async (lesson) => {
     try {
+      localStorage.setItem("selectedLessonId", lesson.id);
       setLessonCompleted(false); // 🔥 Always reset first when viewing any lesson
   
       const res = await fetch(`${API_URL}/lessons/${lesson.id}`);
@@ -71,8 +82,12 @@ import React, { useState, useEffect } from "react";
       });
   
       const school_id = JSON.parse(localStorage.getItem("userProfile"))?.school_id;
-      const scoreRes = await fetch(`${API_URL}/scores/${lesson.id}/${school_id}`);
-      const scoreData = await scoreRes.json();
+      const scoreRes = await fetch(`${API_URL}/lessons/${lesson.id}/${school_id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+            const scoreData = await scoreRes.json();
   
       if (scoreData && scoreData.answers && Object.keys(scoreData.answers).length > 0) {
         setAttemptCount(scoreData.attempts || 0);
@@ -82,7 +97,11 @@ import React, { useState, useEffect } from "react";
           restoredAnswers[q.id] = scoreData.answers[q.id] || "";
         });
         setStudentAnswers(restoredAnswers);
-  
+        
+        setTimeout(() => {
+          setStudentAnswers(restoredAnswers);
+        }, 100);
+
         if (scoreData.score === fullLesson.questions.length || scoreData.attempts >= 3) {
           setLessonCompleted(true);
   
@@ -301,6 +320,7 @@ import React, { useState, useEffect } from "react";
         body: JSON.stringify({
           answers: answers,
           school_id,
+          attempts: newAttemptCount,
         }),
       });
 
@@ -467,15 +487,17 @@ import React, { useState, useEffect } from "react";
        <div className="modal-overlay">
          <div className="modal-container">
            <div className="modal-header">
-             <button 
-               className="modal-back"
-               onClick={() => setSelectedLesson(null)}
-             >
-               <FaArrowLeft /> Back to Lessons
-             </button>
+           <button 
+              className="modal-back"
+              onClick={() => {
+                setSelectedLesson(null);
+                localStorage.removeItem("selectedLessonId");
+              }}
+            >
+              <FaArrowLeft /> Back to Lessons
+            </button>
              <h2 className="modal-title">{selectedLesson.title}</h2>
           </div>
- 
            <div className="modal-body">
              <div className="lesson-content-container">
                <p className="lesson-description">{selectedLesson.description}</p>
