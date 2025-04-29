@@ -28,6 +28,8 @@ const GamePage = () => {
   useEffect(() => {
     const selectedLesson = lesson || "measurements";
     const selectedDifficulty = difficulty || "beginner";
+    document.body.classList.add("game-route");
+    
     
     console.log("Starting game with:", selectedLesson, selectedDifficulty);
   
@@ -1030,6 +1032,7 @@ const GamePage = () => {
 
     // Cleanup on component unmount
     return () => {
+      document.body.classList.remove("game-route");
       const canvas = document.querySelector("canvas");
       if (canvas) {
         canvas.remove();
@@ -1047,6 +1050,9 @@ const GamePage = () => {
       <div ref={gameContainerRef} id="game"></div>
     </div>
   );
+
+
+  
 };
 
 export default GamePage;
