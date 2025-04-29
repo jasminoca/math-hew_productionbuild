@@ -746,7 +746,7 @@ const GamePage = () => {
               gameManager.stateMachine.enterState("round-end");
             }
 
-            } else {
+             else {
               // If the goal is not met, continue to the next hunt
               gameManager.stateMachine.enterState("hunt-start");
             }
