@@ -2,7 +2,6 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
 import React, { useEffect, useRef  } from "react";
 import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder
 import { COLORS } from "../constants"; // Import colors from constants file
