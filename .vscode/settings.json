@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "aboutus",
+        "adminsdk",
         "anims",
         "backgrounddecimal",
         "backgroundfraction",
@@ -12,6 +13,7 @@
         "choosemode",
         "craco",
         "cutscene",
+        "fbsvc",
         "firebaseapp",
         "firebasestorage",
         "firestore",

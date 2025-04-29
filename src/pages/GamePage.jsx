@@ -12,6 +12,10 @@ import gameManager from "../gameManager"; // Import your gameManager
 import formatScore from "../utils"; // Utility function for formatting score
 import { useLocation } from "react-router-dom";
 import "../styles/GamePage.css";
+import axios from "axios";
+
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
 
 const GamePage = () => {
   const location = useLocation();
@@ -31,6 +35,31 @@ const GamePage = () => {
   
     loadAssets(); // load the game assets
     const MAX_ROUNDS = 5;
+    
+    const submitGameScore = async (score) => {
+      try {
+        const firstName = localStorage.getItem('first_name');
+        const lastName = localStorage.getItem('last_name');
+    
+        if (!firstName || !lastName) {
+          console.error('No student name found in Database.');
+          return;
+        }
+    
+        const studentName = `${firstName} ${lastName}`;
+        const payload = {
+          lessonId: lesson,
+          studentName: studentName,
+          score: score,
+          type: difficulty,
+        };
+    
+        await axios.post(`${API_URL}/games/submit`, payload);
+        console.log('Game score submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting game score:', error);
+      }
+    };
     
     // Set up the main-menu scene
     k.scene("main-menu", () => {
@@ -976,8 +1005,18 @@ const GamePage = () => {
           k.pos(k.center().x, k.center().y + 10),
         ]);
     
-        // SUBMIT SOLO SCORE TO DATABASE HERE using "params.score"
-    
+        const school_id = JSON.parse(localStorage.getItem("userProfile"))?.school_id;
+        if (school_id) {
+          submitGameScore({
+            lesson: gameManager.lessonType,
+            difficulty: gameManager.difficultyLevel,
+            score: params.score,
+            school_id,
+          });
+        }
+        
+        submitGameScore(params.score);  // ✅ Call the real submitGameScore function
+
       }
     
       k.wait(2, () => {

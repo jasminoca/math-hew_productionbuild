@@ -130,12 +130,14 @@ import React, { useState, useEffect } from "react";
  
    const handleEditKeypoint = async (id, updatedContent) => {
      try {
-       await fetch(`${API_URL}/lessons/${selectedLesson.id}/keypoints/${id}`, {
-         method: 'PUT',
-         headers: { 'Content-Type': 'application/json' },
-         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-         body: JSON.stringify({ content: updatedContent }),
-       });
+      await fetch(`${API_URL}/lessons/${selectedLesson.id}/keypoints/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ content: updatedContent }),
+      });
        setSelectedLesson((prev) => ({
         ...prev,
         keypoints: prev.keypoints.map((kp) =>
@@ -157,18 +159,19 @@ import React, { useState, useEffect } from "react";
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`, 
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       });
-  
-      setSelectedLesson((prev) => ({
-        ...prev,
-        keypoints: prev.keypoints.filter((kp) => kp.id !== id),
-      }));
 
-      alert("Key Point deleted successfully!");
+     setSelectedLesson((prev) => ({
+      ...prev,
+      keypoints: prev.keypoints.filter((kp) => kp.id !== id),
+    }));
+
+    alert("🗑️ Key Point deleted successfully!");
     } catch (err) {
-      console.error("Failed to delete keypoint:", err);
+      console.error("❌ Failed to delete keypoint:", err);
+      alert("❌ Failed to delete keypoint. Please try again.");
     }
   };
   
@@ -507,10 +510,10 @@ import React, { useState, useEffect } from "react";
                              <div className="edit-buttons">
                                <button
                                  className="save-btn"
-                                 onClick={() => {
-                                   handleEditKeypoint(point.id, editedKeypoint);
-                                   setEditingKeypointId(null);
-                                 }}
+                                 onClick={async () => {
+                                    await handleEditKeypoint(point.id, editedKeypoint);
+                                    setEditingKeypointId(null);
+                                  }}
                                >
                                  <FaCheck /> Save
                                </button>

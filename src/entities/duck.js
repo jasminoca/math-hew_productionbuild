@@ -1,3 +1,5 @@
+/* eslint-disable no-self-assign */
+/* eslint-disable no-unused-vars */
 import gameManager from "../gameManager";
 import { COLORS } from "../constants";
 import k from "../kaplayCtx";
