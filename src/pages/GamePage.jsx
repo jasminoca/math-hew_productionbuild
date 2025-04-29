@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react"; // Make sure useRef is imported
 import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder
 import { COLORS } from "../constants"; // Import colors from constants file
 import Dog from "../entities/dog"; // Import Dog entity
@@ -18,6 +19,7 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
 
 const GamePage = () => {
+  const gameContainerRef = useRef(null);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const difficulty = queryParams.get('difficulty') || "beginner";  
