@@ -1033,12 +1033,17 @@ const GamePage = () => {
       if (canvas) {
         canvas.remove();
       }
+      if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
+        audioCtxRef.current.close().catch(e => console.error("AudioContext close error:", e));
+      }
+      gameManager.initializeGameState();
+      Object.keys(k.scenes).forEach(scene => k.destroyScene(scene));
     };
-  }, []); // Runs once when the component mounts
+  }, []);
 
   return (
-    <div className="game-wrapper">
-      <div id="game"></div>
+    <div className="game-page-container">
+      <div ref={gameContainerRef} id="game"></div>
     </div>
   );
 };
