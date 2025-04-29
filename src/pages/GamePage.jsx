@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
+import React, { useEffect, useRef  } from "react";
 import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder
 import { COLORS } from "../constants"; // Import colors from constants file
 import Dog from "../entities/dog"; // Import Dog entity
@@ -15,9 +16,18 @@ import "../styles/GamePage.css";
 import axios from "axios";
 
 
+
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
 
 const GamePage = () => {
+
+
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
+
+const GamePage = () => {
+  const gameContainerRef = useRef(null);
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const difficulty = queryParams.get('difficulty') || "beginner";  
@@ -27,6 +37,10 @@ const GamePage = () => {
   useEffect(() => {
     const selectedLesson = lesson || "measurements";
     const selectedDifficulty = difficulty || "beginner";
+
+    document.body.classList.add("game-route");
+    
+
     
     console.log("Starting game with:", selectedLesson, selectedDifficulty);
   
@@ -711,6 +725,7 @@ const GamePage = () => {
               // Reset for the next round
               gameManager.currentHuntNb = 0;
               gameManager.stateMachine.enterState("round-end");
+
             } else {
               // If the goal is not met, continue to the next hunt
               gameManager.stateMachine.enterState("hunt-start");
@@ -731,6 +746,28 @@ const GamePage = () => {
               gameManager.currentHuntNb = 0;
               gameManager.stateMachine.enterState("round-end");
             }
+
+            } else {
+              // If the goal is not met, continue to the next hunt
+              gameManager.stateMachine.enterState("hunt-start");
+            }
+          } else {
+            // PVP Mode
+            // Check if current player has reached the goal exactly
+            let currentMeasure = gameManager.currentPlayer === 1 ?
+              gameManager.p1Measure : gameManager.p2Measure;
+      
+            if (currentMeasure === gameManager.goalMeasure) {
+              // Player has reached the goal exactly - set winner
+              gameManager.pvpWinner = gameManager.currentPlayer;
+              gameManager.currentHuntNb = 0;
+              gameManager.stateMachine.enterState("round-end");
+            } else {
+              // Switch turns after a player takes a shot in PVP mode
+              gameManager.currentHuntNb = 0;
+              gameManager.stateMachine.enterState("round-end");
+            }
+
           }
         }
       );
@@ -1029,6 +1066,7 @@ const GamePage = () => {
 
     // Cleanup on component unmount
     return () => {
+      document.body.classList.remove("game-route");
       const canvas = document.querySelector("canvas");
       if (canvas) {
         canvas.remove();
@@ -1046,6 +1084,9 @@ const GamePage = () => {
       <div ref={gameContainerRef} id="game"></div>
     </div>
   );
+
+
+  
 };
 
 export default GamePage;
