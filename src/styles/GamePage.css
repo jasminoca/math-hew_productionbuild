@@ -1,15 +1,8 @@
 .game-page-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  background-color: black;
-  display: none;
-  justify-content: center;
-  align-items: center;
+  display: flex !important; /* Force show */
+  background: black;
 }
+
 
 body.game-route .game-page-container {
   display: flex;
