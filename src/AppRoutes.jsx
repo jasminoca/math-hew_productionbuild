@@ -13,8 +13,6 @@ import ContactUs from "./pages/ContactUs";
 import SignIn from "./pages/SignIn";
 import MainPage from "./pages/MainPage";
 import LessonsPage from "./pages/LessonsPage";
-import MathMemoryGame from "./pages/MathMemoryGame";
-import MathSpeedyQuiz from "./pages/MathSpeedyQuiz";
 import Leaderboard from "./pages/Leaderboard";
 import Registration from "./pages/Registration";
 import ProgressTracking from "./pages/ProgressTracking";
@@ -59,8 +57,6 @@ useEffect(() => {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/main-page" element={<MainPage />} />
-        <Route path="/math-memory-game" element={<MathMemoryGame />} />
-        <Route path="/math-speedy-quiz" element={<MathSpeedyQuiz />} />
         <Route path="/lessons-page" element={<LessonsPage userRole={userRole} />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/progress-tracking" element={<ProgressTracking />} />
