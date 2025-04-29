@@ -2,11 +2,11 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
-import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder
-import { COLORS } from "../constants"; // Import colors from constants file
-import Dog from "../entities/dog"; // Import Dog entity
-import Duck from "../entities/duck"; // Import Duck entity
+import React, { useEffect  } from "react";
+import { loadAssets } from "../assetLoader"; // Assuming assetLoader is in your src folder // Assuming assetLoader is in your src folder
+import { COLORS } from "../constants"; // Import colors from constants file // Import colors from constants file
+import Dog from "../entities/dog"; // Import Dog entity // Import Dog entity
+import Duck from "../entities/duck"; // Import Duck entity // Import Duck entity
 import k from "../kaplayCtx";
 import gameManager from "../gameManager"; // Import your gameManager
 import formatScore from "../utils"; // Utility function for formatting score
@@ -18,22 +18,19 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
 
 const GamePage = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const difficulty = queryParams.get('difficulty') || "beginner";  
-  const lesson = queryParams.get('lesson') || "measurements";    
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  
+  const audioCtxRef = useRef(null);
+  const gameContainerRef = useRef(null);
+  const isInitialized = useRef(false);
+
   useEffect(() => {
-    const selectedLesson = lesson || "measurements";
-    const selectedDifficulty = difficulty || "beginner";
-    
-    console.log("Starting game with:", selectedLesson, selectedDifficulty);
-  
-    gameManager.lessonType = selectedLesson; 
-    gameManager.difficultyLevel = selectedDifficulty; 
-  
-    loadAssets(); // load the game assets
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
+    // Initialize audio context
+    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Load assets when the component mounts
+    loadAssets();
     const MAX_ROUNDS = 5;
     
     const submitGameScore = async (score) => {
@@ -1029,6 +1026,7 @@ const GamePage = () => {
 
     // Cleanup on component unmount
     return () => {
+      document.body.classList.remove("game-route");
       const canvas = document.querySelector("canvas");
       if (canvas) {
         canvas.remove();
@@ -1046,6 +1044,9 @@ const GamePage = () => {
       <div ref={gameContainerRef} id="game"></div>
     </div>
   );
+
+
+  
 };
 
 export default GamePage;

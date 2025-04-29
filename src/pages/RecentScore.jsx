@@ -60,7 +60,7 @@ const RecentScores = () => {
                 <tr key={index}>
                   {userRole !== "student" && <td>{s.school_id}</td>}
                   <td>{s.scoreType}</td>
-                  <td>{s.lessonTitle || s.lessonId || s.game_name || "Untitled"}</td>
+                  <td>{s.lessonTitle || s.lessonTitle || s.lessonId || s.game_name || "Untitled"}</td>
                   <td>{s.score}</td>
                   <td>{new Date(s.created_at).toLocaleString()}</td>
                 </tr>
