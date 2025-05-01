@@ -50,7 +50,9 @@ const SignIn = () => {
       localStorage.setItem("authToken", access_token);
       localStorage.setItem("role", user.role);
       localStorage.setItem("user", JSON.stringify(user));
-  
+      localStorage.setItem("full_name", user.full_name);
+      localStorage.setItem("userProfile", JSON.stringify(user));
+      
       dispatch(signInSuccess(user));
   
       alert(`Welcome back, ${user.name || "User"}!`);

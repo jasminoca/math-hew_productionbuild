@@ -31,10 +31,28 @@ const RecentScores = () => {
     fetchScores();
   }, [userRole, schoolId]);
 
-  const mergedScores = [
-    ...lessonScores.map(score => ({ ...score, scoreType: "Lesson" })),
-    ...gameScores.map(score => ({ ...score, scoreType: "Game" })),
-  ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const sanitizeValue = (val) => {
+    if (typeof val === "string" || typeof val === "number") return val;
+    return "N/A";
+  };
+
+  const cleanedLessonScores = lessonScores.map(score => ({
+    scoreType: "Lesson",
+    lessonTitle: sanitizeValue(score.lessonTitle || score.lessonId || "Untitled"),
+    difficulty: sanitizeValue(score.difficulty || "Beginner"),
+    score: sanitizeValue(score.score),
+    school_id: sanitizeValue(score.school_id),
+  }));
+
+  const cleanedGameScores = gameScores.map(score => ({
+    scoreType: "Game",
+    lessonTitle: sanitizeValue(score.lesson || score.lessonId || "Untitled"),
+    difficulty: sanitizeValue(score.difficulty || "Beginner"),
+    score: sanitizeValue(score.score),
+    school_id: sanitizeValue(score.school_id),
+  }));
+
+  const mergedScores = [...cleanedLessonScores, ...cleanedGameScores];
 
   return (
     <div className="recent-scores-container">
@@ -46,8 +64,8 @@ const RecentScores = () => {
               {userRole !== "student" && <th>Student</th>}
               <th>Type</th>
               <th>Title</th>
+              <th>Difficulty</th>
               <th>Score</th>
-              <th>Date</th>
             </tr>
           </thead>
           <tbody>
@@ -60,9 +78,9 @@ const RecentScores = () => {
                 <tr key={index}>
                   {userRole !== "student" && <td>{s.school_id}</td>}
                   <td>{s.scoreType}</td>
-                  <td>{s.lessonTitle || s.lessonId || s.game_name || "Untitled"}</td>
+                  <td>{s.lessonTitle}</td>
+                  <td>{s.difficulty}</td>
                   <td>{s.score}</td>
-                  <td>{new Date(s.created_at).toLocaleString()}</td>
                 </tr>
               ))
             )}

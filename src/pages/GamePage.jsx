@@ -10,7 +10,7 @@ import Duck from "../entities/duck"; // Import Duck entity
 import k from "../kaplayCtx";
 import gameManager from "../gameManager"; // Import your gameManager
 import formatScore from "../utils"; // Utility function for formatting score
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/GamePage.css";
 import axios from "axios";
 
@@ -18,13 +18,21 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000"; 
 
 const GamePage = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const difficulty = queryParams.get('difficulty') || "beginner";  
   const lesson = queryParams.get('lesson') || "measurements";    
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  
+
+
   useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+      if (!authToken) {
+        console.warn("No auth token found. Redirecting to sign-in...");
+        navigate("/signin");
+        return;
+      }
     const selectedLesson = lesson || "measurements";
     const selectedDifficulty = difficulty || "beginner";
     
@@ -34,24 +42,28 @@ const GamePage = () => {
     gameManager.difficultyLevel = selectedDifficulty; 
   
     loadAssets(); // load the game assets
-    const MAX_ROUNDS = 5;
+    const MAX_ROUNDS = 1;
     
+    console.log("DEBUG full_name:", localStorage.getItem("full_name"));
+    console.log("DEBUG userProfile:", localStorage.getItem("userProfile"));
     const submitGameScore = async (score) => {
       try {
-        const firstName = localStorage.getItem('first_name');
-        const lastName = localStorage.getItem('last_name');
-    
-        if (!firstName || !lastName) {
-          console.error('No student name found in Database.');
+        const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+        const fullName = userProfile?.full_name?.trim();
+        const schoolId = userProfile?.school_id;
+
+        if (!fullName || !schoolId) {
+          console.error("Missing full_name or school_id from localStorage");
           return;
         }
     
-        const studentName = `${firstName} ${lastName}`;
+        const studentName = fullName.trim();
         const payload = {
           lessonId: lesson,
           studentName: studentName,
           score: score,
           type: difficulty,
+          school_id: schoolId,
         };
     
         await axios.post(`${API_URL}/games/submit`, payload);

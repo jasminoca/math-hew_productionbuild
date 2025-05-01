@@ -10,17 +10,25 @@ const Leaderboard = () => {
 
   const fetchGameScores = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/scores/game`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/games`);
       const scores = response.data || [];
 
+      // Check for invalid shape
       const rankedScores = scores
-        .sort((a, b) => b.score - a.score)
-        .map((entry, index) => ({
-          rank: index + 1,
-          name: entry.studentName || "Player",
-          schoolId: entry.school_id || "N/A",
-          score: entry.score,
-        }));
+        .filter(entry => typeof entry === "object" && entry.score !== undefined)
+        .map((entry, index) => {
+          const name =
+            typeof entry.studentName === "string"
+              ? entry.studentName
+              : `${entry.lesson || "?"} (${entry.difficulty || "?"})`;
+
+          return {
+            rank: index + 1,
+            name: String(name),
+            schoolId: String(entry.school_id || "N/A"),
+            score: Number(entry.score),
+          };
+        });
 
       setGameScores(rankedScores);
     } catch (error) {
