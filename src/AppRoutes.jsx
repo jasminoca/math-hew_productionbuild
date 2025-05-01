@@ -23,12 +23,14 @@ import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RecentScore from "./pages/RecentScore";
-import GamePage from "./pages/GamePage";
+import GamePage from "./pages/GamePage"; 
 
 const AppRoutes = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const userRole = getUserRole();
+
+  const hideFooter = location.pathname === "/game";
 
   useEffect(() => {
     const savedUser = localStorage.getItem("userProfile");
@@ -37,15 +39,11 @@ const AppRoutes = () => {
     }
   }, [dispatch]);
 
-  // Add this useEffect to your existing AppRoutes component
-useEffect(() => {
-  if (location.pathname === "/game") {
-    document.body.classList.add("game-route");
-    window.scrollTo(0, 0);
-  } else {
-    document.body.classList.remove("game-route");
-  }
-}, [location.pathname]);
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 5);
+  }, []);
 
   return (
     <>
@@ -65,6 +63,7 @@ useEffect(() => {
         <Route path="/recent-scores" element={<RecentScore />} />
         <Route path="/game" element={<GamePage />} />
 
+
         <Route
           path="/TeacherAdminPage"
           element={
@@ -83,7 +82,7 @@ useEffect(() => {
         />
         <Route path="/admin/admin-users" element={<AdminUsers />} />
       </Routes>
-      {location.pathname !== "/game" && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   );
 };

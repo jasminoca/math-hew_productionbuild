@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/RecentScore.css";
@@ -35,12 +36,7 @@ const RecentScores = () => {
     ...lessonScores.map(score => ({ ...score, scoreType: "Lesson" })),
     ...gameScores.map(score => ({ ...score, scoreType: "Game" })),
   ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-  const mergedScores = [
-    ...lessonScores.map(score => ({ ...score, scoreType: "Lesson" })),
-    ...gameScores.map(score => ({ ...score, scoreType: "Game" })),
-  ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
+  
   const renderTable = (scores, type) => (
     <div className="recent-scores-section">
       <h2>{type} Scores</h2>
