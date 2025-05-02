@@ -405,12 +405,17 @@ body {
 .choice-item label {
   display: flex;
   align-items: center;
-  cursor: pointer;
+  gap: 8px;
+  font-size: 0.95rem; /* Slightly smaller text for better spacing */
 }
 
 .choice-radio {
-  margin-right: 10px;
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color); /* Optional: adds theme color */
 }
+
 
 .choice-text {
   color: #444;
