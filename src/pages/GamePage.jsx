@@ -42,7 +42,7 @@ const GamePage = () => {
     gameManager.difficultyLevel = selectedDifficulty; 
   
     loadAssets(); // load the game assets
-    const MAX_ROUNDS = 1;
+    const MAX_ROUNDS = 3;
     
     console.log("DEBUG full_name:", localStorage.getItem("full_name"));
     console.log("DEBUG userProfile:", localStorage.getItem("userProfile"));
