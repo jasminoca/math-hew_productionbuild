@@ -9,10 +9,8 @@
   background-color: black;
   padding: 20px;
   margin: 20px auto;
-  width: 100%;
-  max-width: 800px; /* set a max width */
-  height: auto;
-  contain: content;
+  transform: scale(0.9);         /* Scale to 90% */
+  transform-origin: top center;  /* Optional: set origin to scale from top center */
 }
 
 #game canvas {
