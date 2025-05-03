@@ -20,7 +20,7 @@ const MainPage = () => {
       {/* Welcome Section */}
       <div className="welcome-section">
         <h1 className="welcome-title">
-          Welcome, {currentUser?.username ? ` ${currentUser.username}` : ""}!
+          Welcome!
         </h1>
         <p className="welcome-description">
           Explore fun and interactive activities to enhance your math skills!
