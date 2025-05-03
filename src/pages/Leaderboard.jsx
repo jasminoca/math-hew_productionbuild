@@ -6,14 +6,12 @@ import { getUserRole } from "../utils/auth";
 
 const Leaderboard = () => {
   const [gameScores, setGameScores] = useState([]);
-  const userRole = getUserRole();
 
   const fetchGameScores = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/games`);
       const scores = response.data || [];
 
-      // Check for invalid shape
       const rankedScores = scores
         .filter(entry => typeof entry === "object" && entry.score !== undefined)
         .map((entry, index) => {
@@ -49,13 +47,12 @@ const Leaderboard = () => {
             <th>Rank</th>
             <th>Name (School ID)</th>
             <th>Score</th>
-            {userRole !== "student" && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
           {gameScores.length === 0 ? (
             <tr>
-              <td colSpan="4">No scores available yet.</td>
+              <td colSpan="3">No scores available yet.</td>
             </tr>
           ) : (
             gameScores.map((entry, index) => (
@@ -63,10 +60,6 @@ const Leaderboard = () => {
                 <td>{entry.rank}</td>
                 <td>{entry.name} ({entry.schoolId})</td>
                 <td>{entry.score}</td>
-                {userRole !== "student" && (
-                  <td>
-                  </td>
-                )}
               </tr>
             ))
           )}
