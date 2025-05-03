@@ -9,17 +9,18 @@
   background-color: black;
   padding: 20px;
   margin: 20px auto;
-  max-width: 80%;
+  width: 100%;
+  max-width: 800px; /* set a max width */
   height: auto;
-  contain: content; /* Prevent layout shifts */
+  contain: content;
 }
 
 #game canvas {
-  display: block;
-  max-width: 80%;
+  width: 100%;        /* scale down with container */
   height: auto;
+  max-width: 100%;    /* prevent overflow */
   border: 4px solid #8B0000;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0,0,0,0.6);
-  image-rendering: crisp-edges; /* Pixel perfect */
+  image-rendering: crisp-edges;
 }
