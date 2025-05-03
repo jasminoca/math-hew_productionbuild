@@ -64,10 +64,10 @@ const Leaderboard = () => {
                 <td>{entry.name} ({entry.schoolId})</td>
                 <td>{entry.score}</td>
                 {userRole !== "student" && (
-                  <td>
-                    <button className="edit-btn">Edit</button>
-                    <button className="delete-btn">Delete</button>
-                  </td>
+                  // <td>
+                  //   <button className="edit-btn">Edit</button>
+                  //   <button className="delete-btn">Delete</button>
+                  // </td>
                 )}
               </tr>
             ))
